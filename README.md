@@ -19,24 +19,10 @@ the front end.
 - 🧩 **Field methods**: `->emojis()`, `->toEmoji()`, `->toEmojiText()`
 - 🌍 **Translated**: Panel in `en`, `de`, `es` and `fr`, emoji names in the editor's language
 
+Features marked **(Pro)** need a license, see [Editions](#editions).
+
 The picker is built on [vue-frimousse](https://vue-frimousse.robertshaw.id) and uses
 [Emojibase](https://emojibase.dev) data, with category tabs, search, skin tones and recently used emojis.
-
-## Editions
-
-| Feature                                                   | Free | Pro |
-| --------------------------------------------------------- | :--: | :-: |
-| Emoji and Emoji Text fields, Writer node, Textarea button |  ✅  | ✅  |
-| Shortcode suggestions, recently used, skin tones          |  ✅  | ✅  |
-| Field methods                                             |  ✅  | ✅  |
-| Native emojis                                             |  ✅  | ✅  |
-| Emoji sets: Noto, Fluent, OpenMoji, your own              |  –   | ✅  |
-| Custom emojis                                             |  –   | ✅  |
-
-Pro needs a license key for each site in production. Activate it under **Panel → System → Plugins**
-(click the license status of Kirby Emojis) or in **Panel → Emojis**. On local environments (`localhost`,
-`*.test`, …) Pro is available for development without a key. Set `'jeslage.emojis.edition' => 'free'`
-to try the free edition locally.
 
 ## Installation
 
@@ -242,6 +228,22 @@ npm run format    # Prettier
 [release-please](https://github.com/googleapis/release-please) opens a release PR from the
 [Conventional Commits](https://www.conventionalcommits.org) on `main`. CI checks that the committed
 `index.js` and `index.css` match a fresh build.
+
+## Editions
+
+| Feature                                                   | Free | Pro |
+| --------------------------------------------------------- | :--: | :-: |
+| Emoji and Emoji Text fields, Writer node, Textarea button |  ✅  | ✅  |
+| Shortcode suggestions, recently used, skin tones          |  ✅  | ✅  |
+| Field methods                                             |  ✅  | ✅  |
+| Native emojis                                             |  ✅  | ✅  |
+| Emoji sets: Noto, Fluent, OpenMoji, your own              |  –   | ✅  |
+| Custom emojis                                             |  –   | ✅  |
+
+Pro needs a license key for each site in production. Activate it under **Panel → System → Plugins**
+(click the license status of Kirby Emojis) or in **Panel → Emojis**. On local environments (`localhost`,
+`*.test`, …) Pro is available for development without a key. Set `'jeslage.emojis.edition' => 'free'`
+to try the free edition locally.
 
 ## License
 
