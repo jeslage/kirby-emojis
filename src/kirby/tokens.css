@@ -1,0 +1,26 @@
+/* Maps the shared --emojis-* tokens to the Panel's design tokens (light and dark theme) */
+:root {
+    --emojis-radius: var(--rounded);
+    --emojis-back: light-dark(var(--color-white), var(--color-gray-850));
+    --emojis-text: var(--color-text);
+    --emojis-text-muted: var(--color-text-dimmed);
+    --emojis-border: light-dark(var(--color-gray-250), var(--color-gray-800));
+    --emojis-hover: light-dark(var(--color-gray-200), var(--color-gray-750));
+    --emojis-input-back: light-dark(var(--color-white), var(--color-gray-900));
+    --emojis-input-border: light-dark(var(--color-gray-300), var(--color-gray-750));
+    --emojis-focus: var(--color-focus);
+    --emojis-shadow: var(--shadow-xl);
+}
+
+/* Custom emojis in the Writer */
+.k-writer-custom-emoji img {
+    display: inline-block;
+    width: 1.25em;
+    height: 1.25em;
+    vertical-align: -0.25em;
+    object-fit: contain;
+}
+.k-writer-custom-emoji.ProseMirror-selectednode {
+    outline: 2px solid var(--color-focus);
+    border-radius: var(--rounded-sm);
+}
