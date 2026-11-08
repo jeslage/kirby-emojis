@@ -1,0 +1,102 @@
+title: Default
+
+tabs:
+  emoji:
+    label: Emoji fields
+    icon: smile
+    columns:
+      - width: 1/2
+        fields:
+          emoji:
+            label: Emoji
+            type: emoji
+            help: Picker-only field, default config
+          emojiEmpty:
+            label: Emoji (empty)
+            type: emoji
+          emojiConfigured:
+            label: Emoji (configured)
+            type: emoji
+            categories: [smileys-people, animals-nature]
+            skinTone: medium-dark
+            help: Only Smileys & People and Animals, skin tone medium-dark
+          emojiReadOnly:
+            label: Emoji (disabled)
+            type: emoji
+            disabled: true
+          emojiRequired:
+            label: Emoji (required)
+            type: emoji
+            required: true
+            skinToneSelector: false
+      - width: 1/2
+        fields:
+          emojiText:
+            label: Emoji Text
+            type: emojitext
+          emojiTextConfigured:
+            label: Emoji Text (configured)
+            type: emojitext
+            placeholder: Say something nice…
+            maxlength: 80
+            before: "@"
+            categories: [food-drink]
+            skinTone: light
+          emojiTextRequired:
+            label: Emoji Text (required)
+            type: emojitext
+            required: true
+            skinToneSelector: false
+
+  editors:
+    label: Writer & Textarea
+    icon: text
+    fields:
+      text:
+        label: Writer
+        type: writer
+        nodes: [heading, bulletList, orderedList, emoji]
+        toolbar:
+          inline: false
+        help: The emoji node adds the toolbar button, custom emojis and :shortcode suggestions
+      textWithoutEmoji:
+        label: Writer (without emoji)
+        type: writer
+        help: Control field, the emoji button must not show
+      textarea:
+        label: Textarea
+        type: textarea
+        buttons: [headlines, bold, italic, "|", link, email, "|", emoji]
+        help: Emoji toolbar button and :shortcode suggestions
+
+  nested:
+    label: Structure & Blocks
+    icon: list-bullet
+    fields:
+      reactions:
+        label: Reactions
+        type: structure
+        fields:
+          emoji:
+            label: Emoji
+            type: emoji
+          note:
+            label: Note
+            type: emojitext
+      blocks:
+        label: Blocks
+        type: blocks
+        fieldsets:
+          heading: true
+          emoji:
+            name: Emoji
+            icon: smile
+            preview: fields
+            wysiwyg: true
+            fields:
+              emoji:
+                label: Emoji
+                type: emoji
+              caption:
+                label: Caption
+                type: emojitext

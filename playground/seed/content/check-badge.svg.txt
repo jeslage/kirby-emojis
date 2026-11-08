@@ -1,0 +1,13 @@
+Template: emoji
+
+----
+
+Alt: Approved
+
+----
+
+Shortcode: approved
+
+----
+
+Keywords: check, done, ok

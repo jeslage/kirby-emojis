@@ -1,0 +1,48 @@
+Title: Home
+
+----
+
+Emoji: 🦊
+
+----
+
+Emojiconfigured: 👋🏾
+
+----
+
+Emojirequired: :sparkle-star:
+
+----
+
+Emojitext: Hello 👋 world :pixel-heart: 🇩🇪 1️⃣ 🏴󠁧󠁢󠁳󠁣󠁴󠁿
+
+----
+
+Emojitextconfigured: Pizza 🍕 time
+
+----
+
+Emojitextrequired: Required ✅
+
+----
+
+Text: <p>Writer with 🎉, a custom <span data-emoji="approved" class="k-emoji">:approved:</span> and 👩🏽‍💻.</p>
+
+----
+
+Textarea: Textarea with 🚀 and :sparkle-star:
+
+----
+
+Reactions:
+
+- 
+  emoji: 👍
+  note: Nice :pixel-heart:
+- 
+  emoji: 🎉
+  note: Party time
+
+----
+
+Blocks: []
