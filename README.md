@@ -7,6 +7,8 @@ the front end.
 
 > Status: in development, built against Kirby 6.0.0-beta.3.
 
+![Two Panel screenshots: a page with the emoji picker open on an Emoji Text field, and shortcode suggestions for ":sunrise" in a Writer field](.github/demo.png)
+
 ## Features
 
 - 😀 **Emoji field**: pick a single emoji
