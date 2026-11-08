@@ -1,0 +1,30 @@
+Kirby Emojis License
+
+Copyright (c) 2026 Johannes Eslage. All rights reserved.
+
+Kirby Emojis ("the Software") is commercial software with two editions:
+
+- Free edition: may be used free of charge on any number of websites.
+- Pro edition: requires a valid license key for each website it is used on in
+  production.
+  Using the Pro edition on local and staging environments for development and
+  testing does not require a license.
+
+You may:
+
+- Install and use the Software on websites as allowed by the edition above.
+- Modify the source code for use on those websites.
+
+You may not:
+
+- Use the Pro edition in production without a valid license.
+- Remove, disable or work around the license and edition checks.
+- Sell, sublicense, redistribute or publish the Software or modified versions
+  of it, in whole or in part, outside of the websites it is used on.
+
+The Software is provided "as is", without warranty of any kind, express or
+implied, including but not limited to the warranties of merchantability, fitness
+for a particular purpose and noninfringement. In no event shall the author or
+copyright holders be liable for any claim, damages or other liability, whether
+in an action of contract, tort or otherwise, arising from, out of or in
+connection with the Software or the use or other dealings in the Software.

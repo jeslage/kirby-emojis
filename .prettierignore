@@ -1,0 +1,12 @@
+vendor
+playground
+node_modules
+index.js
+index.css
+composer.lock
+package-lock.json
+CHANGELOG.md
+.release-please-manifest.json
+*.md
+*.php
+tests/fixtures

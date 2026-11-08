@@ -1,0 +1,48 @@
+{
+    "name": "jeslage/kirby-emojis",
+    "description": "Emoji picker for the Kirby Panel: Emoji and Emoji Text fields, Writer and Textarea buttons, shortcode suggestions, custom emojis and Noto, Fluent or OpenMoji sets",
+    "type": "kirby-plugin",
+    "license": "proprietary",
+    "version": "0.1.0",
+    "authors": [
+        {
+            "name": "Johannes Eslage",
+            "email": "hello@johanneseslage.de"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "KirbyEmojis\\": "classes"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "KirbyEmojis\\Tests\\": "tests"
+        }
+    },
+    "require": {
+        "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
+        "getkirby/composer-installer": "^1.2"
+    },
+    "require-dev": {
+        "getkirby/cms": "^6.0.0-beta.3",
+        "phpunit/phpunit": "^12.0"
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "config": {
+        "allow-plugins": {
+            "getkirby/composer-installer": true
+        },
+        "optimize-autoloader": true
+    },
+    "extra": {
+        "kirby": {
+            "compatible": "^6.0"
+        },
+        "kirby-cms-path": false
+    },
+    "minimum-stability": "beta",
+    "prefer-stable": true
+}

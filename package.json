@@ -1,0 +1,30 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "kirbyup dev src/index.js",
+        "build": "kirbyup src/index.js",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
+    },
+    "dependencies": {
+        "@lucide/vue": "1.61.0",
+        "vue-frimousse": "^0.1.4"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "^6.0.10",
+        "@vue/test-utils": "^2.5.1",
+        "jsdom": "^31.0.0",
+        "kirbyup": "^4.0.0-beta.1",
+        "kirbyuse": "^2.0.0-beta.5",
+        "prettier": "3.9.10",
+        "prosemirror-model": "1.25.13",
+        "prosemirror-schema-basic": "1.2.5",
+        "prosemirror-state": "1.4.4",
+        "prosemirror-view": "1.42.9",
+        "vitest": "^5.1.0",
+        "vue": "^3.5.45"
+    }
+}

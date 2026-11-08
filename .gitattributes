@@ -1,0 +1,15 @@
+/.editorconfig export-ignore
+/.gitattributes export-ignore
+/.github export-ignore
+/.gitignore export-ignore
+/.prettierignore export-ignore
+/.prettierrc.json export-ignore
+/.release-please-manifest.json export-ignore
+/release-please-config.json export-ignore
+/package.json export-ignore
+/package-lock.json export-ignore
+/phpunit.xml export-ignore
+/vitest.config.js export-ignore
+/playground export-ignore
+/src export-ignore
+/tests export-ignore
