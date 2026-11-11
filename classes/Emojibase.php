@@ -32,6 +32,9 @@ class Emojibase
 
     public const SHORTCODES = 'shortcodes/emojibase.json';
 
+    // Minutes a failed fetch is remembered before it is tried again
+    public const FAILURE_TTL = 1;
+
     protected array $labels = [];
 
     /**
@@ -158,15 +161,22 @@ class Emojibase
             return $data;
         }
 
+        // Remember a failed fetch briefly, so pages don't each wait for the timeout while the CDN is down
+        if ($cache->exists($key . '-failed') === true) {
+            throw new Exception(message: 'Loading the emoji data from ' . $url . ' failed recently, retrying later');
+        }
+
         $response = Emojis::fetch($url, 15);
 
         if ($response === null || $response['code'] < 200 || $response['code'] >= 300) {
+            $cache->set($key . '-failed', true, self::FAILURE_TTL);
             throw new Exception(message: 'Could not load the emoji data from ' . $url);
         }
 
         $data = json_decode($response['body'], true);
 
         if (is_array($data) === false) {
+            $cache->set($key . '-failed', true, self::FAILURE_TTL);
             throw new Exception(message: 'Invalid emoji data from ' . $url);
         }
 
