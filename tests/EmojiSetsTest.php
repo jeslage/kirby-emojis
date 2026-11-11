@@ -206,6 +206,112 @@ class EmojiSetsTest extends TestCase
         $this->assertSame(404, $this->kirby->call('media/emojis/unknown/1f600.svg')->code());
     }
 
+    /**
+     * Requests sent to a set's CDN, leaving out the Emojibase data
+     */
+    protected function cdnRequests(): int
+    {
+        return count(array_filter($this->requests, fn ($url) => str_contains($url, 'emojibase-data') === false));
+    }
+
+    protected function storedFiles(string $set): array
+    {
+        return array_map('basename', glob($this->root . '/media/emojis/' . $set . '/*.svg') ?: []);
+    }
+
+    public function testImageRouteRedirectsVariantsToOneStoredFile(): void
+    {
+        $this->responses['/1f600.svg'] = $this->svg('grin');
+
+        $this->assertStringContainsString('grin', $this->kirby->call('media/emojis/fluent/1f600.svg')->body());
+
+        foreach (['fe0f-1f600', '1f600-fe0f-fe0f', '01f600'] as $codes) {
+            $response = $this->kirby->call('media/emojis/fluent/' . $codes . '.svg');
+
+            $this->assertSame(301, $response->code(), $codes);
+            $this->assertSame('https://example.com/media/emojis/fluent/1f600.svg', (string)$response->headers()['Location']);
+        }
+
+        $this->assertSame(1, $this->cdnRequests());
+        $this->assertSame(['1f600.svg'], $this->storedFiles('fluent'));
+    }
+
+    public function testImageRouteMapsUnqualifiedAndPaddedCodesToEmojibase(): void
+    {
+        $this->assertStringEndsWith('/fluent/2764-fe0f.svg', $this->kirby->call('media/emojis/fluent/2764.svg')->headers()['Location']->toString());
+        $this->assertStringEndsWith('/fluent/31-fe0f-20e3.svg', $this->kirby->call('media/emojis/fluent/0031-20e3.svg')->headers()['Location']->toString());
+        $this->assertSame(0, $this->cdnRequests());
+    }
+
+    public function testImageRouteDoesNotFetchOrStoreUnknownCodes(): void
+    {
+        $this->responses['.svg'] = $this->svg();
+
+        foreach (['1f600-1f600', 'abcde', 'fe0f', '1f9cc'] as $codes) {
+            $response = $this->kirby->call('media/emojis/fluent/' . $codes . '.svg');
+
+            $this->assertSame(200, $response->code());
+            $this->assertStringContainsString('<text', $response->body());
+            $this->assertSame('public, max-age=3600', $response->headers()['Cache-Control']);
+            $this->assertFalse(Emojis::cache('misses')->exists('fluent/' . $codes));
+        }
+
+        $this->assertSame(0, $this->cdnRequests());
+        $this->assertDirectoryDoesNotExist($this->root . '/media/emojis/fluent');
+    }
+
+    public function testImageRouteFetchesNothingWithoutEmojibaseData(): void
+    {
+        $this->responses = ['/en/data.json' => ['code' => 503, 'body' => ''], '.svg' => $this->svg()];
+
+        $response = $this->kirby->call('media/emojis/fluent/1f600.svg');
+
+        $this->assertStringContainsString('<text', $response->body());
+        $this->assertSame(0, $this->cdnRequests());
+    }
+
+    public function testImageRouteLimitsUncachedFetchesOfLoggedOutVisitors(): void
+    {
+        $this->responses['.svg'] = $this->svg('fetched');
+        $this->app(['images' => ['fetchLimit' => 2]]);
+
+        $this->assertStringContainsString('fetched', $this->kirby->call('media/emojis/fluent/1f600.svg')->body());
+        $this->assertStringContainsString('fetched', $this->kirby->call('media/emojis/fluent/1f44b.svg')->body());
+
+        // Over the limit: the native fallback, nothing fetched
+        $limited = $this->kirby->call('media/emojis/fluent/2764-fe0f.svg');
+        $this->assertStringContainsString('<text', $limited->body());
+        $this->assertSame('public, max-age=3600', $limited->headers()['Cache-Control']);
+        $this->assertSame(2, $this->cdnRequests());
+
+        // Cached images are always served
+        $this->assertStringContainsString('fetched', $this->kirby->call('media/emojis/fluent/1f600.svg')->body());
+
+        // Logged-in users aren't limited
+        $this->kirby->impersonate('kirby');
+        $this->assertStringContainsString('fetched', $this->kirby->call('media/emojis/fluent/2764-fe0f.svg')->body());
+        $this->assertSame(3, $this->cdnRequests());
+    }
+
+    public function testFetchLimitResetsEveryMinuteAndCanBeTurnedOff(): void
+    {
+        $this->app(['images' => ['fetchLimit' => 1]]);
+        $sets = Emojis::sets();
+
+        $this->assertTrue($sets->allowFetch('203.0.113.1'));
+        $this->assertFalse($sets->allowFetch('203.0.113.1'));
+        $this->assertTrue($sets->allowFetch('203.0.113.2'), 'Counted per visitor');
+
+        // A new minute starts a new count, and past counters are removed
+        $this->assertTrue($sets->allowFetch('203.0.113.1', time() + 60));
+        $this->assertCount(1, glob($this->root . '/site/cache/jeslage-emojis-fetches/*'));
+
+        $this->app(['images' => ['fetchLimit' => false]]);
+        foreach (range(1, 5) as $i) {
+            $this->assertTrue(Emojis::sets()->allowFetch('203.0.113.1'));
+        }
+    }
+
     public function testFieldMethods(): void
     {
         $this->settings(['emoji_set' => 'openmoji']);

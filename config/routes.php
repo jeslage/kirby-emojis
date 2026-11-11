@@ -69,24 +69,51 @@ return function (App $kirby) {
             },
         ],
         // Emoji set images: fetched once from the set's origin, then stored in the media
-        // folder, so the web server serves later requests directly
+        // folder, so the web server serves later requests directly. Public, so only
+        // emojis in the Emojibase data are fetched, each stored once under its
+        // canonical code, and uncached fetches are limited per logged-out visitor.
         [
             'pattern' => $media . '/emojis/([a-z]+)/([0-9a-f-]+).svg',
-            'action'  => function (string $set, string $codes) {
+            'action'  => function (string $set, string $codes) use ($kirby) {
                 $sets = Emojis::sets();
 
                 if (preg_match(EmojiSets::CODES_PATTERN, $codes) !== 1 || $sets->isImageSet($set) === false) {
                     return new Response('Not found', 'text/plain', 404);
                 }
 
-                $svg      = $sets->svg($set, $codes);
-                $fallback = $svg === null;
+                $image = function (string|null $svg) use ($sets, $codes): Response {
+                    // Missing emojis fall back to the native character; browsers keep
+                    // it only briefly, in case it was a network error
+                    return new Response($svg ?? $sets->fallbackSvg($codes), 'image/svg+xml', 200, [
+                        'Cache-Control'           => $svg === null ? 'public, max-age=3600' : 'public, max-age=2592000',
+                        'X-Content-Type-Options'  => 'nosniff',
+                        'Content-Security-Policy' => "default-src 'none'; style-src 'unsafe-inline'",
+                    ]);
+                };
 
-                return new Response($svg ?? $sets->fallbackSvg($codes), 'image/svg+xml', 200, [
-                    'Cache-Control'           => $fallback ? 'public, max-age=3600' : 'public, max-age=2592000',
-                    'X-Content-Type-Options'  => 'nosniff',
-                    'Content-Security-Policy' => "default-src 'none'; style-src 'unsafe-inline'",
-                ]);
+                $canonical = $sets->canonical($codes);
+
+                // Unknown to Emojibase (or no data to check against): nothing is fetched or stored
+                if ($canonical === null) {
+                    return $image(null);
+                }
+
+                // Other spellings (FE0F, leading zeros) point to the one stored file,
+                // which the web server then serves directly
+                if ($canonical !== strtolower($codes)) {
+                    return Response::redirect($sets->baseUrl() . '/' . $set . '/' . $canonical . '.svg', 301);
+                }
+
+                // Logged-in users aren't limited: the Panel's picker requests many images at once
+                if (
+                    $sets->isCached($set, $canonical) === false &&
+                    $kirby->user() === null &&
+                    $sets->allowFetch($kirby->visitor()->ip()) === false
+                ) {
+                    return $image(null);
+                }
+
+                return $image($sets->svg($set, $canonical));
             },
         ],
     ];

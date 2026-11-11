@@ -106,6 +106,10 @@ the set's CDN and stored in `media/emojis/{set}/`; the web server serves them fr
 never contact the CDN. Emojis missing in a set fall back to a native emoji. OpenMoji requires
 [attribution](https://openmoji.org/faq/#attribution).
 
+The image route only fetches emojis listed in the Emojibase data, stores each one once (other spellings of
+the same emoji redirect to it) and limits uncached fetches to 60 per minute and logged-out visitor
+(`images.fetchLimit`). To turn image sets off entirely, use `disabledSets: ['*']`.
+
 Fill the cache in advance under Panel → Emojis → Image Cache, or with
 [Kirby CLI](https://github.com/getkirby/cli):
 

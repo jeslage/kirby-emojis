@@ -26,6 +26,10 @@ return [
     ],
     // File for the settings from the Panel's Emojis view
     // 'settings' => fn ($kirby) => $kirby->root('config') . '/emojis.yml',
+    'images' => [
+        // Uncached set images the public image route fetches per logged-out visitor and minute (false = no limit)
+        'fetchLimit' => 60,
+    ],
     'cache' => [
         'emojibase' => true,
         'misses'    => true,

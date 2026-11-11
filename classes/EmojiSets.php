@@ -48,7 +48,15 @@ class EmojiSets
 
     public const NAME_PATTERN = '/^[a-z]+$/';
 
+    // Uncached images the image route fetches per logged-out visitor and minute
+    public const FETCH_LIMIT = 60;
+
     protected static array $extended = [];
+
+    /**
+     * @var array<string, string>|null stripped code => Emojibase code
+     */
+    protected array|null $codeIndex = null;
 
     public static function extend(string $name, array $definition): void
     {
@@ -383,6 +391,106 @@ class EmojiSets
         }
 
         return array_keys($codes);
+    }
+
+    /**
+     * The Emojibase form of a requested code, or null for codes Emojibase doesn't know.
+     * FE0F and leading zeros are ignored, so every spelling of an emoji maps to one
+     * code (and one cached file).
+     */
+    public function canonical(string $codes): string|null
+    {
+        try {
+            $this->codeIndex ??= Emojis::cache('emojibase')->getOrSet(
+                'codes',
+                function () {
+                    $index = [];
+
+                    foreach ($this->allCodes() as $code) {
+                        $index[$this->stripped($code)] = $code;
+                    }
+
+                    return $index;
+                },
+                (int)Emojis::option('emojibase.ttl', 60 * 24 * 7)
+            );
+        } catch (Throwable) {
+            // Without Emojibase data nothing can be checked, so nothing is fetched
+            return null;
+        }
+
+        return $this->codeIndex[$this->stripped($codes)] ?? null;
+    }
+
+    protected function stripped(string $codes): string
+    {
+        $parts = array_filter(
+            explode('-', strtolower($codes)),
+            fn ($code) => $code !== self::VARIATION_SELECTOR
+        );
+
+        return implode('-', array_map(fn ($code) => ltrim($code, '0') ?: '0', $parts));
+    }
+
+    /**
+     * Counts an uncached fetch of a logged-out visitor; false once the
+     * `images.fetchLimit` per minute is reached (`false` turns the limit off).
+     * A locked counter file per visitor and minute keeps the count exact
+     * under parallel requests.
+     */
+    public function allowFetch(string|null $ip, int|null $now = null): bool
+    {
+        $limit = Emojis::option('images.fetchLimit', self::FETCH_LIMIT);
+
+        if ($limit === false || $limit === null) {
+            return true;
+        }
+
+        $minute = intdiv($now ?? time(), 60);
+        $root   = $this->rateLimitRoot();
+        $file   = $root . '/' . md5((string)$ip) . '-' . $minute;
+
+        if (is_dir($root) === false) {
+            Dir::make($root);
+        }
+
+        $handle = fopen($file, 'c+');
+
+        if ($handle === false) {
+            return true;
+        }
+
+        try {
+            flock($handle, LOCK_EX);
+            $count = (int)stream_get_contents($handle);
+
+            if ($count >= (int)$limit) {
+                return false;
+            }
+
+            ftruncate($handle, 0);
+            rewind($handle);
+            fwrite($handle, (string)($count + 1));
+
+            // A new counter: drop the ones of past minutes
+            if ($count === 0) {
+                foreach (glob($root . '/*-*') ?: [] as $old) {
+                    if ((int)substr($old, strrpos($old, '-') + 1) < $minute) {
+                        @unlink($old);
+                    }
+                }
+            }
+
+            return true;
+        } finally {
+            flock($handle, LOCK_UN);
+            fclose($handle);
+        }
+    }
+
+    protected function rateLimitRoot(): string
+    {
+        return Emojis::kirby()->root('cache') . '/jeslage-emojis-fetches';
     }
 
     public function cacheStatus(): array
