@@ -212,6 +212,10 @@ cd playground && ./setup.sh     # local Kirby site, see playground/README.md
 npm run dev                     # Panel assets with hot reload
 ```
 
+Releases ship the built Panel assets: `index.js` and `index.css` are committed, so Composer installs and
+Git checkouts work without a build. **After changing `src/`, build them yourself** (`npm ci && npm run build`)
+and commit them; CI checks that they match a fresh build.
+
 The Panel code is split into `src/shared/` (picker, Emoji Text input, suggestions, editor plugins: no
 Kirby APIs, shared with [statamic-emojis](https://github.com/jeslage/statamic-emojis)) and `src/kirby/`
 (fields, Writer and Textarea integration, the Emojis view). `src/shared/host.js` is the only connection
