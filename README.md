@@ -186,7 +186,10 @@ All options with their defaults, in `site/config/config.php`:
     'edition'      => null,          // "free" forces the free edition
     'set'          => 'native',      // default set when none is saved in the Panel
     'sets'         => [],            // extra or overriding sets
-    'disabledSets' => [],
+    'disabledSets' => [],            // ['*'] = native only
+    'images'       => [
+        'fetchLimit' => 60,          // uncached set images per minute and logged-out visitor, false = no limit
+    ],
     'custom'       => [
         'enabled'  => true,
         'parent'   => 'site',        // or a page id
@@ -255,15 +258,22 @@ Pro needs a license key for each site in production. Activate it under **Panel â
 `*.test`, â€¦) Pro is available for development without a key. Set `'jeslage.emojis.edition' => 'free'`
 to try the free edition locally.
 
+## Support
+
+Questions and bug reports go to [GitHub issues](https://github.com/jeslage/kirby-emojis/issues), for the
+free and the **Pro** edition.
+
 ## License
 
 Kirby Emojis is commercial software with a free edition, see [LICENSE](LICENSE).
 
 ## Credits
 
-- [vue-frimousse](https://github.com/Sorrow-Dev/vue-frimousse) (MIT) and [Emojibase](https://emojibase.dev) (MIT)
+- [vue-frimousse](https://github.com/xiaoluoboding/vue-frimousse) (MIT) and [Emojibase](https://emojibase.dev) (MIT)
 - [Noto Emoji](https://github.com/googlefonts/noto-emoji) (Apache 2.0),
   [Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (MIT),
   [OpenMoji](https://openmoji.org) (CC BY-SA 4.0)
 - [Lucide](https://lucide.dev) icons (ISC)
 - The Writer decorations port a part of [prosemirror-view](https://github.com/ProseMirror/prosemirror-view) (MIT)
+
+The license notices of the code bundled in the Panel assets are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
